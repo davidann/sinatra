@@ -88,7 +88,14 @@ class RoutingTest < Test::Unit::TestCase
     get '/f%C3%B6%C3%B6'
     assert_equal 200, status
   end
-
+  
+  it "it REALLY handles encoded slashes correctly" do
+    mock_app { get("/:g/:e/:h/:d") { |g,e,h,d| [g,e,h,d].join(' ') } }
+    get '/g/e/http%3A%2F%2Fkdweb.com%2F/2014'
+    assert_equal 200, status
+    assert_body "g e http://kdweb.com/ 2014"
+  end
+  
   it "it handles encoded slashes correctly" do
     mock_app {
       set :protection, :except => :path_traversal
